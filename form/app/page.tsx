@@ -233,12 +233,8 @@ export default function Form() {
             <p className='text-red-500'>{errors.addressComplement.message}</p>
           )}
 
-
           <Radiobox/>
         
-
-
-
           <label 
             className="block text-neutral-500 font-semibold text-sm py-2"
             htmlFor="password">Senha

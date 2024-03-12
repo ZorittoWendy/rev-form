@@ -5,6 +5,8 @@ import {useForm} from 'react-hook-form'
 import { z } from 'zod'
 import Radiobox from './Components/RadioBox';
 import ToggleSwitch from './Components/toggle';
+import { Input } from './Components/Input';
+
 
 const schema = z.object({
   fullname: z.string().min(1, 'O nome deve invalido ').max(100, 'O nome de ter no max 100 caracteres'),
@@ -50,184 +52,133 @@ export default function Form() {
     <main className="bg-slate-50 max-w-4xl mx-auto p-24">
       <form onSubmit={handleSubmit(handleForm)}>
           
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password"> Nome completo
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+
+          <Input
             type="text"
             placeholder="José Aldo" 
             {... register('fullname')}
+            label='Nome completo'
           />
           {errors.fullname?.message && (
             <p className='text-red-500'>{errors.fullname.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password"> CPF
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          
+          <Input
             type="text"
             placeholder="111.333.444-22" 
             {... register('documentNumber')}
-          
+            label='CPF'
           />
           {errors.documentNumber?.message && (
             <p className='text-red-500'>{errors.documentNumber.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Data de Nascimento
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+         
+          <Input
             type="text"
             placeholder="10/10/1001" 
             {... register('birthdate')}
+            label='Data de nascimento'
+
           />
           {errors.birthdate?.message && (
             <p className='text-red-500'>{errors.birthdate.message}</p>
           )}
 
-           <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Data de Nascimento
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
-            type="text"
-            placeholder="10/10/1001" 
-            {... register('birthdate')}
-          />
-          {errors.birthdate?.message && (
-            <p className='text-red-500'>{errors.birthdate.message}</p>
-          )}
-
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Email
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          
+          <Input
             type="password"
             placeholder="Email" 
             {... register('email')}
+            label='Email'
           />
           {errors.email?.message && (
             <p className='text-red-500'>{errors.email.message}</p>
           )}
 
-           <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">CEP
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          <Input
             type="text"
             placeholder="CEP" 
             {... register('zipcode')}
+            label='CEP'
           />
           {errors.zipcode?.message && (
             <p className='text-red-500'>{errors.zipcode.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">contato
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          
+          <Input
             type="text"
             placeholder="Contato" 
             {... register('phoneNumber')}
+            label='Contato'
           />
           {errors.phoneNumber?.message && (
             <p className='text-red-500'>{errors.phoneNumber.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Numero
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          
+          <Input
             type="text"
             placeholder="Numero" 
             {... register('addressNumber')}
+            label='Numero'
           />
-          {errors.zipcode?.message && (
-            <p className='text-red-500'>{errors.zipcode.message}</p>
+          {errors.addressNumber?.message && (
+            <p className='text-red-500'>{errors.addressNumber.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Pais
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          
+          <Input
             type="text"
             placeholder="Brasil" 
             {... register('country')}
+            label='País'
           />
           {errors.country?.message && (
             <p className='text-red-500'>{errors.country.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Cidade
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+        
+          <Input
             type="text"
             placeholder="Macapá" 
             {... register('city')}
+            label='Cidade'
           />
           {errors.city?.message && (
             <p className='text-red-500'>{errors.city.message}</p>
           )}
           
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Bairro
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+         
+          <Input
             type="text"
             placeholder="Bairro" 
             {... register('addressDistrict')}
+            label='Bairro'
           />
           {errors.addressDistrict?.message && (
             <p className='text-red-500'>{errors.addressDistrict.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Endereço
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          
+          <Input
             type="text"
             placeholder="Endereço" 
             {... register('addressStreet')}
+            label='Endereço'
           />
           {errors.addressStreet?.message && (
             <p className='text-red-500'>{errors.addressStreet.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Complemento
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+        
+          <Input
             type="text"
             placeholder="Complemento" 
             {... register('addressComplement')}
+            label='Complemento'
           />
           {errors.addressComplement?.message && (
             <p className='text-red-500'>{errors.addressComplement.message}</p>
@@ -235,29 +186,23 @@ export default function Form() {
 
           <Radiobox/>
         
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Senha
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+         
+          <Input
             type="password"
             placeholder="********" 
             {... register('password')}
+            label='Senha'
           />
           {errors.password?.message && (
             <p className='text-red-500'>{errors.password.message}</p>
           )}
 
-          <label 
-            className="block text-neutral-500 font-semibold text-sm py-2"
-            htmlFor="password">Confirme a sua senha
-          </label>
-          <input
-            className="block w-full border border-neutral-400 rounded p-2 mb-6"
+          
+          <Input
             type="password"
             placeholder="********" 
             {... register('confirmPassword')}
+            label='Confirma Senha'
           />
           {errors.confirmPassword?.message && (
             <p className='text-red-500'>{errors.confirmPassword.message}</p>

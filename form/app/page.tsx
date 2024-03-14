@@ -3,32 +3,55 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import {useForm} from 'react-hook-form'
 import { z } from 'zod'
-import Radiobox from './Components/RadioBox';
+import { useCallback, useEffect } from 'react';
+import axios from 'axios';
 import ToggleSwitch from './Components/toggle';
 import { Input } from './Components/Input';
+import Radiobox from './Components/RadioBox';
+import { zipCodeMask } from './Mask/Mask';
 
 
 const schema = z.object({
-  fullname: z.string().min(1, 'O nome deve invalido ').max(100, 'O nome de ter no max 100 caracteres'),
-  documentNumber:z.string().min(11, 'cpf invalido' ),
-  email:z.string().min(9, 'Email Invalido'),
-  birthdate:z.string().min(9, 'Data de nascimento invalida'),
-  zipcode:z.string().min(8, 'Digite um cep valido'),
-  phoneNumber:z.string().min(11, 'Digite um numero valido'),
-  addressNumber:z.string().max(40, 'adicione um numero valido'),
-  addressState:z.string().max(2, 'Insira o numero valido'),
-  country:z.string().min(6,'insira um pais valido'),
-  city:z.string().min(9,'insira uma cidade valido'),
-  addressDistrict:z.string().min(9,'insira um bairro valido'),
-  addressStreet:z.string().min(9, 'Insira um endreço valido'),
-  addressComplement:z.string(),
-  
-  password: z.string().min(10, 'A senha de ter no minimo 10 caracteres').regex(/(\d{3})(\d{3})(\d{3})(\d{2})/g, '$1.$2.$3-$4'),
-  confirmPassword: z.string()
-}).refine((fields) => fields.password === fields.confirmPassword, {
+  address: z.object({
+   
+    zipcode:z.string().min(8, 'Digite um cep valido'),
+    addressNumber:z.string().max(40, 'adicione um numero valido'),
+    addressState:z.string().max(2, 'Insira o numero valido'),
+    country:z.string().min(6,'insira um pais valido'),
+    city:z.string().min(9,'insira uma cidade valido'),
+    addressDistrict:z.string().min(9,'insira um bairro valido'),
+    addressStreet:z.string().min(9, 'Insira um endreço valido'),
+    addressComplement:z.string(),
+    
+   
+  }),
+
+  datafields: z.object({
+
+    fullname: z.string().min(1, 'O nome invalido ').max(100, 'O nome de ter no max 100 caracteres'),
+    documentNumber:z.string().min(11, 'Cpf invalido' ),
+    email:z.string().min(9, 'Email Invalido'),
+    birthdate:z.string().min(9, 'Data de nascimento invalida'),
+    phoneNumber:z.string().min(11, 'Digite um numero valido'),
+
+    password: z.string().min(10, 'A senha de ter no minimo 10 caracteres').regex(/(\d{3})(\d{3})(\d{3})(\d{2})/g, '$1.$2.$3-$4'),
+    confirmPassword: z.string()
+  })
+}).refine((fields) => fields.datafields.password === fields.datafields.confirmPassword, {
   path: ['confirmPassword'],
   message: 'As senhas precisam ser iguais'
-});
+}).transform((field) => ({
+  address:{
+    zipcode: field.address.zipcode,
+    addressDistrict: field.address.addressDistrict,
+    addressState: field.address.addressState,
+    addressNumber: field.address.addressNumber,
+    city: field.address.city,
+    country: field.address.country,
+    addressStreet: field.address.addressStreet,
+    addressComplement: field.address.addressComplement,
+  }
+}))
 
 type FormProps = z.infer<typeof schema>;
 
@@ -37,176 +60,208 @@ type FormProps = z.infer<typeof schema>;
 
 export default function Form() {
 
-  const {register, handleSubmit, formState: {errors} } = useForm<FormProps>({
+  const {register, handleSubmit, watch, setValue,
+    formState: {errors} } = useForm<FormProps>({
     mode: 'all',
-    resolver: zodResolver(schema)
+    resolver: zodResolver(schema),
+    defaultValues:{
+      address: {
+        zipcode: '',
+        city: '',
+        addressNumber: '',
+        addressComplement: '',
+        addressDistrict: '',
+        addressStreet: '',
+        addressState: '',
+        
+      }
+    }
   });
 
-  console.log('errors', errors)
+  
+  const zipcode = watch('address.zipcode')
 
   const handleForm = (data: FormProps) => {
     console.log(data)
   };
+  
+
+  const handleFetchAddress = useCallback(async(zipcode: string) =>{
+    const {data} = await axios.get(
+      `https://viacep.com.br/ws/${zipcode}/json/ `)
+
+    console.log(data)
+  }, [])
+
+  useEffect(() => {
+    setValue('address.zipcode', zipCodeMask(zipcode))
+
+    if (zipcode.length !== 9 ) return;
+   handleFetchAddress(zipcode)
+ }, [handleFetchAddress, setValue, zipcode])
+
+
+
 
   return (
     <main className="bg-slate-50 max-w-4xl mx-auto p-24">
       <form onSubmit={handleSubmit(handleForm)}>
           
 
-          <Input
+        {/*   <Input
             type="text"
             placeholder="José Aldo" 
-            {... register('fullname')}
+            {... register('datafields.fullname')}
             label='Nome completo'
           />
-          {errors.fullname?.message && (
-            <p className='text-red-500'>{errors.fullname.message}</p>
-          )}
+          {errors.datafields?.fullname?.message && (
+            <p className='text-red-500'>{errors.datafields.fullname.message}</p>
+          )} */}
 
           
-          <Input
+        {/*   <Input
             type="text"
             placeholder="111.333.444-22" 
-            {... register('documentNumber')}
+            {... register('datafields.documentNumber')}
             label='CPF'
           />
-          {errors.documentNumber?.message && (
-            <p className='text-red-500'>{errors.documentNumber.message}</p>
-          )}
+          {errors.datafields?.documentNumber?.message && (
+            <p className='text-red-500'>{errors.datafields?.documentNumber?.message}</p>
+          )} */}
 
          
-          <Input
+        {/*   <Input
             type="text"
             placeholder="10/10/1001" 
-            {... register('birthdate')}
+            {... register('datafields.birthdate')}
             label='Data de nascimento'
 
           />
-          {errors.birthdate?.message && (
-            <p className='text-red-500'>{errors.birthdate.message}</p>
-          )}
+          {errors.datafields?.birthdate?.message && (
+            <p className='text-red-500'>{errors.datafields?.birthdate?.message}</p>
+          )} */}
 
-          
+     {/*      
           <Input
             type="password"
             placeholder="Email" 
-            {... register('email')}
+            {... register('datafields.email')}
             label='Email'
           />
-          {errors.email?.message && (
-            <p className='text-red-500'>{errors.email.message}</p>
-          )}
+          {errors.datafields?.email?.message && (
+            <p className='text-red-500'>{errors.datafields?.email?.message}</p>
+          )} */}
 
           <Input
             type="text"
             placeholder="CEP" 
-            {... register('zipcode')}
+            {... register('address.zipcode')}
             label='CEP'
           />
-          {errors.zipcode?.message && (
-            <p className='text-red-500'>{errors.zipcode.message}</p>
+          {errors.address?.zipcode?.message && (
+            <p className='text-red-500'>{errors.address?.zipcode?.message}</p>
           )}
 
           
-          <Input
+       {/*    <Input
             type="text"
             placeholder="Contato" 
-            {... register('phoneNumber')}
+            {... register('datafields.phoneNumber')}
             label='Contato'
           />
-          {errors.phoneNumber?.message && (
-            <p className='text-red-500'>{errors.phoneNumber.message}</p>
-          )}
+          {errors.datafields?.phoneNumber?.message && (
+            <p className='text-red-500'>{errors.datafields?.phoneNumber?.message}</p>
+          )} */}
 
           
           <Input
             type="text"
             placeholder="Numero" 
-            {... register('addressNumber')}
+            {... register('address.addressNumber')}
             label='Numero'
           />
-          {errors.addressNumber?.message && (
-            <p className='text-red-500'>{errors.addressNumber.message}</p>
+          {errors.address?.addressNumber?.message && (
+            <p className='text-red-500'>{errors.address?.addressNumber?.message}</p>
           )}
 
           
           <Input
             type="text"
             placeholder="Brasil" 
-            {... register('country')}
+            {... register('address.country')}
             label='País'
           />
-          {errors.country?.message && (
-            <p className='text-red-500'>{errors.country.message}</p>
+          {errors.address?.country?.message && (
+            <p className='text-red-500'>{errors.address?.country?.message}</p>
           )}
 
         
           <Input
             type="text"
             placeholder="Macapá" 
-            {... register('city')}
+            {... register('address.city')}
             label='Cidade'
           />
-          {errors.city?.message && (
-            <p className='text-red-500'>{errors.city.message}</p>
+          {errors.address?.city?.message && (
+            <p className='text-red-500'>{errors.address?.city?.message}</p>
           )}
           
          
           <Input
             type="text"
             placeholder="Bairro" 
-            {... register('addressDistrict')}
+            {... register('address.addressDistrict')}
             label='Bairro'
           />
-          {errors.addressDistrict?.message && (
-            <p className='text-red-500'>{errors.addressDistrict.message}</p>
+          {errors.address?.addressDistrict?.message && (
+            <p className='text-red-500'>{errors.address?.addressDistrict?.message}</p>
           )}
 
           
           <Input
             type="text"
             placeholder="Endereço" 
-            {... register('addressStreet')}
+            {... register('address.addressStreet')}
             label='Endereço'
           />
-          {errors.addressStreet?.message && (
-            <p className='text-red-500'>{errors.addressStreet.message}</p>
+          {errors.address?.addressStreet?.message && (
+            <p className='text-red-500'>{errors.address?.addressStreet?.message}</p>
           )}
 
         
           <Input
             type="text"
             placeholder="Complemento" 
-            {... register('addressComplement')}
+            {... register('address.addressComplement')}
             label='Complemento'
           />
-          {errors.addressComplement?.message && (
-            <p className='text-red-500'>{errors.addressComplement.message}</p>
+          {errors.address?.addressComplement?.message && (
+            <p className='text-red-500'>{errors.address?.addressComplement?.message}</p>
           )}
 
           <Radiobox/>
         
-         
+        {/*  
           <Input
             type="password"
             placeholder="********" 
-            {... register('password')}
+            {... register('datafields.password')}
             label='Senha'
           />
-          {errors.password?.message && (
-            <p className='text-red-500'>{errors.password.message}</p>
+          {errors.datafields?.password?.message && (
+            <p className='text-red-500'>{errors.datafields?.password?.message}</p>
           )}
-
+ */}
           
-          <Input
+       {/*    <Input
             type="password"
             placeholder="********" 
-            {... register('confirmPassword')}
+            {... register('datafields.confirmPassword')}
             label='Confirma Senha'
           />
-          {errors.confirmPassword?.message && (
-            <p className='text-red-500'>{errors.confirmPassword.message}</p>
-          )}
+          {errors.datafields?.confirmPassword?.message && (
+            <p className='text-red-500'>{errors.datafields?.confirmPassword?.message}</p>
+          )} */}
 
           <ToggleSwitch/>
 

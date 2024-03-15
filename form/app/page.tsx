@@ -15,15 +15,14 @@ const schema = z.object({
   address: z.object({
    
     zipcode:z.string().min(8, 'Digite um cep valido'),
-    addressNumber:z.string().max(40, 'adicione um numero valido'),
-    addressState:z.string().max(2, 'Insira o numero valido'),
+    Number:z.string().max(40, 'adicione um numero valido'),
+    State:z.string().max(2, 'Insira o numero valido'),
     country:z.string().min(6,'insira um pais valido'),
     city:z.string().min(9,'insira uma cidade valido'),
-    addressDistrict:z.string().min(9,'insira um bairro valido'),
-    addressStreet:z.string().min(9, 'Insira um endreço valido'),
-    addressComplement:z.string(),
-    
-   
+    District:z.string().min(9,'insira um bairro valido'),
+    Street:z.string().min(9, 'Insira um endreço valido'),
+    Complement:z.string(),
+  
   }),
 
   datafields: z.object({
@@ -43,17 +42,25 @@ const schema = z.object({
 }).transform((field) => ({
   address:{
     zipcode: field.address.zipcode,
-    addressDistrict: field.address.addressDistrict,
-    addressState: field.address.addressState,
-    addressNumber: field.address.addressNumber,
+    District: field.address.District,
+    State: field.address.State,
+    Number: field.address.Number,
     city: field.address.city,
     country: field.address.country,
-    addressStreet: field.address.addressStreet,
-    addressComplement: field.address.addressComplement,
+    Street: field.address.Street,
+    Complement: field.address.Complement,
   }
 }))
 
 type FormProps = z.infer<typeof schema>;
+type AddressProps = {
+  bairro: string;
+  complemento:string;
+  localidade: string;
+  logradouro:string;
+  uf: string;
+
+}
 
 
 
@@ -68,12 +75,11 @@ export default function Form() {
       address: {
         zipcode: '',
         city: '',
-        addressNumber: '',
-        addressComplement: '',
-        addressDistrict: '',
-        addressStreet: '',
-        addressState: '',
-        
+        Number: '',
+        Complement: '',
+        District: '',
+        Street: '',
+        State: '',
       }
     }
   });
@@ -85,13 +91,20 @@ export default function Form() {
     console.log(data)
   };
   
+  const handleSetData = useCallback((data: AddressProps) => {
+    setValue('address.city', data.localidade),
+    setValue('address.Street', data.logradouro),
+    setValue('address.State', data.uf),
+    setValue('address.District', data.bairro),
+    setValue('address.Complement', data.complemento)
+  }, [setValue])
 
   const handleFetchAddress = useCallback(async(zipcode: string) =>{
     const {data} = await axios.get(
       `https://viacep.com.br/ws/${zipcode}/json/ `)
 
-    console.log(data)
-  }, [])
+    handleSetData(data)
+  }, [handleSetData])
 
   useEffect(() => {
     setValue('address.zipcode', zipCodeMask(zipcode))
@@ -177,11 +190,21 @@ export default function Form() {
           <Input
             type="text"
             placeholder="Numero" 
-            {... register('address.addressNumber')}
+            {... register('address.Number')}
             label='Numero'
           />
-          {errors.address?.addressNumber?.message && (
-            <p className='text-red-500'>{errors.address?.addressNumber?.message}</p>
+          {errors.address?.Number?.message && (
+            <p className='text-red-500'>{errors.address?.Number?.message}</p>
+          )}
+
+          <Input
+            type="text"
+            placeholder="DF" 
+            {... register('address.State')}
+            label='Estado'
+          />
+          {errors.address?.State?.message && (
+            <p className='text-red-500'>{errors.address?.State?.message}</p>
           )}
 
           
@@ -210,33 +233,33 @@ export default function Form() {
           <Input
             type="text"
             placeholder="Bairro" 
-            {... register('address.addressDistrict')}
+            {... register('address.District')}
             label='Bairro'
           />
-          {errors.address?.addressDistrict?.message && (
-            <p className='text-red-500'>{errors.address?.addressDistrict?.message}</p>
+          {errors.address?.District?.message && (
+            <p className='text-red-500'>{errors.address?.District?.message}</p>
           )}
 
           
           <Input
             type="text"
             placeholder="Endereço" 
-            {... register('address.addressStreet')}
+            {... register('address.Street')}
             label='Endereço'
           />
-          {errors.address?.addressStreet?.message && (
-            <p className='text-red-500'>{errors.address?.addressStreet?.message}</p>
+          {errors.address?.Street?.message && (
+            <p className='text-red-500'>{errors.address?.Street?.message}</p>
           )}
 
         
           <Input
             type="text"
             placeholder="Complemento" 
-            {... register('address.addressComplement')}
+            {... register('address.Complement')}
             label='Complemento'
           />
-          {errors.address?.addressComplement?.message && (
-            <p className='text-red-500'>{errors.address?.addressComplement?.message}</p>
+          {errors.address?.Complement?.message && (
+            <p className='text-red-500'>{errors.address?.Complement?.message}</p>
           )}
 
           <Radiobox/>
